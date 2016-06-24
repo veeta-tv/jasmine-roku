@@ -1,0 +1,11 @@
+{ 
+  "name": "jasmine-roku",
+  "version": "1.0.0",
+  "dependencies" :
+  {
+    "local-web-server" : "https://github.com/cdthompson/local-web-server",
+    "roku": "0.2.0",
+    "jasmine": "2.4.1",
+    "ip": "1.1.3"
+  }
+}
