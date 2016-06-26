@@ -1,7 +1,6 @@
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
 
 var RokuTest = require('/Users/christopherthompson/Documents/devel/veeta/roku-open-source/node-roku-test/roku-test');
-//var net = require('net');
 var ip = require('ip');
 var fs = require('fs');
 var localWebServer = require('local-web-server')
@@ -13,6 +12,7 @@ var socket = null;
 var listener = null;
 var webServerLocation = ip.address();
 var testAppName = 'dev';  // this will be 'dev' for sideloaded channels
+var channelZipFile = __dirname + '/testchannel/jasmine-test-channel.zip';
 
 describe("jasmine-test-channel", function() {
 
@@ -71,7 +71,7 @@ describe("jasmine-test-channel", function() {
 
   beforeAll(function(done) {
     console.log(">> Installing test channel");
-    device.install(fs.createReadStream(__dirname + '/testchannel/jasmine-test-channel.zip'), password);
+    device.install(fs.createReadStream(channelZipFile), password);
     done();
   });
 
