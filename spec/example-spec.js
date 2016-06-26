@@ -1,44 +1,27 @@
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
 
-var Roku = require('roku');
-var net = require('net');
-var child_process = require('child_process');
-var request = require('request');
-var qs = require('querystring');
+var RokuTest = require('/Users/christopherthompson/Documents/devel/veeta/roku-open-source/node-roku-test/roku-test');
+//var net = require('net');
 var ip = require('ip');
 var fs = require('fs');
+var localWebServer = require('local-web-server')
 
 var location = process.env.ROKU_DEV_TARGET
 var password = process.env.DEVPASSWORD
-var device = new Roku('http://' + location + ':8060/');
-var localWebServer = require('local-web-server')
+var device = new RokuTest(location);
 var socket = null;
 var listener = null;
 var webServerLocation = ip.address();
-
-
-Roku.prototype.launchWithArgs = function(args, fn) {
-  var baseUrl = this.baseUrl;
-  this.commandQueue.push(function(callback) {
-    var url = baseUrl + 'launch/dev?' + qs.stringify(args);
-    request.post(url, function(e, r, b) {
-      callback(e)
-      fn && fn(e)
-    });
-  }.bind(this));
-};
-
+var testAppName = 'dev';  // this will be 'dev' for sideloaded channels
 
 describe("jasmine-test-channel", function() {
 
-  function launchChannel() {
+  function launchChannel(args) {
     console.log('Returning home');
-    device.press(Roku.HOME);
+    device.press(RokuTest.HOME);
     device.delay(1000);
     console.log('Launching channel');
-    device.launchWithArgs({
-      url: 'http://' + webServerLocation + ':8000/test'
-    });
+    device.launchWithArgs(testAppName, args);
     device.delay(1000);
   }
 
@@ -46,95 +29,93 @@ describe("jasmine-test-channel", function() {
     var port = 8000;
     var server_config = { 
       'verbose': true,
+      'log': {
+        'format': 'dev'
+      },
       'mocks': [
+        // a test route that simply returns a unique string
         {   
           'route': '/test',
           'response': {
             'body': "D397C652"
           }
-        }
-      ]   
+        },
+
+        // a metadata response, similar to a real Roku metadata backend
+        {
+          'route': '/metadata',
+          'response': {
+            'body': JSON.stringify({   
+              "stream": {
+                "url": "http://" + webServerLocation + ":8000/content/Skateboarding_720.mp4",
+                "bitrate": 1328.0,
+                "quality": true
+              },
+              "StreamFormat": "mp4",
+              "Title": "Skateboarding",
+              "Description": "Skateboarding Test Stream"
+            }),
+          }
+        },
+      ],
+
+      // stream any content right from a local directory
+      'rewrite': {
+        'from': '/content/*',
+        'to': '/spec/content/$1'
+      }
     };
     console.log('Launching web server');
     return localWebServer(server_config).listen(port);
   }
 
-  function keypressWithDelay(key) {
-    device.press(key);
-    device.delay(200);
-  }
-
-  function contraCode() {
-    keys = [
-      // press welcome screen log in 
-      Roku.UP, Roku.UP,
-      Roku.DOWN, Roku.DOWN,
-      Roku.LEFT, Roku.RIGHT,
-      Roku.LEFT, Roku.RIGHT,
-      Roku.SELECT, Roku.PLAY
-    ];
-    keys.map(keypressDelay);
-  }
-
-  function installChannel(done) {
-    url = 'http://' + location + '/plugin_install';
-    params = {
-      mySubmit: "Install",
-      archive: fs.readFileSync('./spec/testchannel/jasmine-test-channel.zip'),
-      passwd: ""
-    };
-
-    request.post({ url: url, form: params, auth: { user: 'rokudev', pass: password}}, function(error, response, body) {});
-  }
-
   beforeAll(function(done) {
     console.log(">> Installing test channel");
-
-    // Install the test target channel
-    installChannel(done);
-
-    // connect to telnet, consuming the backlog which is immediately written
-    // to the client
-    console.log(">> Connecting to debug log (telnet 8085)");
-    socket = new net.Socket();
-
-    socket.on('data', function(data) {
-      // the telnet server writes the last n lines of log on connect. Ignore them here.
-      console.log("ignoring " + data.length + " bytes");
-    }); 
-
-    socket.connect({ port: 8085, host: location });
-
-    // allow for telnet connection and data reads to happen
-    setTimeout(function() {
-      socket.removeAllListeners('data');
-      done();
-    }, 2000);
+    device.install(fs.createReadStream(__dirname + '/testchannel/jasmine-test-channel.zip'), password);
+    done();
   });
 
   afterAll(function() {
-    // close the telnet session
-    if (socket !== null) {
-      socket.destroy();
-    }
+    device.destroyDebug();
   });
 
   afterEach(function() {
+    // take care to clean up or you'll get EADDRINUSE
     if (listener !== null) {
       listener.close();
       listener = null;
     }
-    socket.removeAllListeners('data');
+    // whether tests pass or fail, we don't want callbacks hanging around
+    device.removeAllListeners('debugData');
+    // exit the channel
+    device.press(RokuTest.HOME);
   });
 
+  ////////
+  //
+  // A contrived example test using a pre-canned channel.
+  //
   it("should request the given url and log the response", function(done) {
     listener = launchWebService();
-    socket.on('data', function(data) {
+    device.on('debugData', function(data) {
       if (data.toString().match('RESP: D397C652') !== null) {
         done();
       }
     }); 
-    launchChannel();
+    launchChannel({ url: 'http://' + webServerLocation + ':8000/test' });
+  });
+
+  //////
+  // Behave a little more like a channel, playing a movie served up locally
+  //
+  it("should request metadata and stream the content", function(done) {
+    listener = launchWebService();
+    device.on('debugData', function(data) {
+      if (data.toString().match('VIDEO: DONE') !== null) {
+        done();
+      }
+    });
+    launchChannel({ metadata: 'http://' + webServerLocation + ':8000/metadata' });
   });
 
 });
