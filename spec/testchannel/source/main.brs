@@ -59,6 +59,7 @@ Function playMovie(metadataUrl As String)
           print "VIDEO: START"
         else if msg.isFullResult() then
           print "VIDEO: DONE"
+          return 0
         else if msg.isRequestFailed() then
           print "ERROR: Video request failed " + stri(msg.GetIndex()) + " " + msg.GetMessage()
         end if
