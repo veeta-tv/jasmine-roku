@@ -2,7 +2,7 @@
 Example jasmine tests using node-roku-test for verifying Roku channel behavior
 
 
-# Running tests
+# Running Examples
 
 1. Clone this repo
 
@@ -23,14 +23,13 @@ Example jasmine tests using node-roku-test for verifying Roku channel behavior
         $ jasmine
 
 
-# Applying to a channel
+# Applying to an existing channel
 
 1. Copy package.json and spec/* to the existing channel directory
-2. Set the channelZipFile to be tested.  By default this is a precanned channel but should be the output of the channel build.
-3. Use launchWebService() as an example of a mocked CMS and its many failure modes (network errors, 500 responses)
-4. Add logging to the channel code for key events like screen changes, video playback events, and network errors.
-5. Create jasmine tests for scenarios you wish to test.
-
+2. Copy/Edit spec/example-spec.js to:
+    a. Set channelZipFile as the right location for your channel zip file
+    b. Set web server configuration to behave as you need
+    c. Define jasmine tests for your channel
 
 
 
