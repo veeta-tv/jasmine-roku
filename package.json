@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "dependencies" :
   {
-    "node-roku-test": "cdthompson/node-roku-test",
-    "local-web-server": "cdthompson/local-web-server",
+    "node-roku-test": "veeta-tv/node-roku-test",
+    "local-web-server": "veeta-tv/local-web-server",
     "jasmine": "2.4.1",
     "ip": "1.1.3"
   }
