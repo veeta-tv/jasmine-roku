@@ -39,7 +39,7 @@ Example jasmine tests using node-roku-test for verifying Roku channel behavior
 
 All code distributed under [MIT]() license.
 
-Includes *Skateboarding* video from [CableLabs](http://fourkay.cablelabs.com/) used under [Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License](http://fourkay.cablelabs.com/license/)
+Includes *Wild water fowl* video from [93 films](http://93films.blogspot.com/) used under [Creative Commons Attribution 3.0 Unported License](https://creativecommons.org/licenses/by/3.0/).
 
 
 
