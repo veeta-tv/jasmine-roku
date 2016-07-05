@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "dependencies" :
   {
-    "node-roku-test": "veeta-tv/node-roku-test",
+    "roku-test": "veeta-tv/node-roku-test",
     "local-web-server": "veeta-tv/local-web-server",
     "jasmine": "2.4.1",
     "ip": "1.1.3"
