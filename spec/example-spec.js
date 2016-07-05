@@ -45,13 +45,13 @@ describe("jasmine-test-channel", function() {
           'response': {
             'body': JSON.stringify({   
               "stream": {
-                "url": "http://" + webServerLocation + ":8000/content/Skateboarding_720.mp4",
+                "url": "http://" + webServerLocation + ":8000/content/birds_720_300k.mp4",
                 "bitrate": 1328.0,
                 "quality": true
               },
               "StreamFormat": "mp4",
-              "Title": "Skateboarding",
-              "Description": "Skateboarding Test Stream"
+              "Title": "Birds",
+              "Description": "Birds Test Stream"
             }),
           }
         },
