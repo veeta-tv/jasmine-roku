@@ -5,9 +5,7 @@ var ip = require('ip');
 var fs = require('fs');
 var localWebServer = require('local-web-server')
 
-var location = process.env.ROKU_DEV_TARGET
-var password = process.env.DEVPASSWORD
-var device = new RokuTest(location);
+var device = new RokuTest(process.env.ROKU_DEV_TARGET, process.env.DEVPASSWORD);
 var socket = null;
 var listener = null;
 var webServerLocation = ip.address();
@@ -71,7 +69,7 @@ describe("jasmine-test-channel", function() {
 
   beforeAll(function(done) {
     console.log(">> Installing test channel");
-    device.install(fs.createReadStream(channelZipFile), password);
+    device.install(fs.createReadStream(channelZipFile));
     done();
   });
 
