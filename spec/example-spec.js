@@ -1,9 +1,9 @@
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
 
-var RokuTest = require('/Users/christopherthompson/Documents/devel/veeta/roku-open-source/node-roku-test/roku-test');
+var RokuTest = require('roku-test');
 var ip = require('ip');
 var fs = require('fs');
-var localWebServer = require('local-web-server')
+var localWebServer = require('local-web-server');
 
 var device = new RokuTest(process.env.ROKU_DEV_TARGET, process.env.DEVPASSWORD);
 var socket = null;
